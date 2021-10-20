@@ -4,7 +4,6 @@ require 'handlers/exchangeHandler.php';
 require 'handlers/histogramHandler.php';
 require 'handlers/linearHandler.php';
 require 'handlers/petalHandler.php';
-require 'handlers/fieldsHandler.php';
 require 'getParamValidator.php';
 
 header("Content-Type: application/json");
@@ -52,7 +51,7 @@ function RESTapi($dataBase)
             } else {
                 echoJSON($data);
             }
-        } elseif ($URL[2] === 'exchange') {
+        } elseif ($URL[2] === 'T') {
 
             $products = checkGetParamProducts();
             if($products == 'error') return;
@@ -85,9 +84,6 @@ function RESTapi($dataBase)
             if($dates == 'error'){return;}
             
             echoJSON(petalHandler($primaryField, $params, $dates, $dataBase));
-
-        }elseif($URL[2] === 'fields'){
-            echoJSON(fieldsHandler($dataBase));
         }
     }
 }
