@@ -6,14 +6,14 @@ use Doctrine\ORM\EntityManager;
 
 $isDevMode = true;
 
-$entityPaths = array("../src");
+$entityPaths = array("src");
 // конфигурация подключения
 $dbParams = array(
     'driver'   => 'pdo_pgsql',
-    'user'     => 'postgres',
-    'password' => '',
-    'dbname'   => 'admin_chart_test',
+    'user'     => 'admin_chart',
+    'password' => '47gt40',
+    'dbname'   => 'admin_chart',
 );
 
-$config = Setup::createAnnotationMetadataConfiguration($entityPaths, $isDevMode);
+$config = Setup::createAnnotationMetadataConfiguration($entityPaths, $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
 $entityManager = EntityManager::create($dbParams, $config);
