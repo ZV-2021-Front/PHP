@@ -6,7 +6,7 @@ namespace App\Controller;
 
 use Validator\GetValidator;
 
-use Doctrine\DBAL\Connection;
+use App\Repository\ApplesRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -38,7 +38,7 @@ class LineGraphController extends AbstractController
     /**
      * @Route("api/linear", name="line_graph")
      */
-    public function index(Connection $conn, Request $request): Response
+    public function index(ApplesRepository $applesRepository, Request $request): Response
     // function linearHandler(string $xAxisField, string $yAxisField, array $products, array $date, $data_base)
     {
         // return $this->json([
@@ -73,23 +73,8 @@ class LineGraphController extends AbstractController
         if(isset($yAxisField['error'])){return $this->json($yAxisField);}
 
         
-        // $data = linearHandler($xAxisField, $yAxisField, $products, $dates, $dataBase);
-        $queryBuilder = $conn->createQueryBuilder();
-
-        $queryBuilder->select($xAxisField, $yAxisField)->from('Apples', 'a');
         
-        if($products[0] != 'all' )
-            $queryBuilder->andWhere("a.products IN (:products)")->setParameter('products', $products, Connection::PARAM_STR_ARRAY);
-            
-        
-            if(count($date) == 1){
-                $queryBuilder->andWhere("a.date = (:date)")->setParameter('date', $date);
-            }else{
-                $queryBuilder->andWhere("a.date BETWEEN  :date_1 AND :date_2")->setParameter('date_1', $date[0])
-                ->setParameter('date_2', $date[1]);
-            }
-        
-        $respone = $queryBuilder->execute()->fetchAll();
+        $respone = $applesRepository->fetchRow($xAxisField, $yAxisField, $products, $date);
         
         // $jsonResponse = new \Symfony\Component\HttpFoundation\JsonResponse($respone);
         // $jsonResponse->setEncodingOptions(256);
