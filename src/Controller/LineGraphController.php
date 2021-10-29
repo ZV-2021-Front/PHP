@@ -41,18 +41,6 @@ class LineGraphController extends AbstractController
     public function index(ApplesRepository $applesRepository, Request $request): Response
     // function linearHandler(string $xAxisField, string $yAxisField, array $products, array $date, $data_base)
     {
-        // return $this->json([
-        //     'message' => 'Welcome to your new controller!',
-        //     'path' => 'src/Controller/LineGraphController.php',
-        // ]);
-        // LineGraphController::setEncodingOptions(256);
-        // $response = new JsonResponse(['message' => "'"]);
-        // $response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
-
-        // return $response;
-
-        
-        
         
         $GET = $request->query->all();
         // return $this->json($GET);
@@ -72,14 +60,11 @@ class LineGraphController extends AbstractController
         $yAxisField = GetValidator::checkGetParamKeyField($GET, 'yAxisField', $fields);
         if(isset($yAxisField['error'])){return $this->json($yAxisField);}
 
+        $data = $applesRepository->getTwoField($xAxisField, $yAxisField, $products, $date);
         
-        
-        $respone = $applesRepository->fetchRow($xAxisField, $yAxisField, $products, $date);
-        
-        // $jsonResponse = new \Symfony\Component\HttpFoundation\JsonResponse($respone);
-        // $jsonResponse->setEncodingOptions(256);
-        // return $jsonResponse->send();
-        
-        return $this->json($respone);
+        return $this->json([
+            'message' => 'Returned',
+            'data' => $data,
+        ]);
     }
 }

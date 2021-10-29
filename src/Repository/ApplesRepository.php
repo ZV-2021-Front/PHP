@@ -8,7 +8,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Connection;
 
 /**
- * @method Apples[]    fetchRow($xAxisField, $yAxisField, $products, $date)
+ * @method Apples[]    getTwoField($xAxisField, $yAxisField, $products, $date)
+ * @method Apples[]    getExchange($product, $date)
  */
 class ApplesRepository extends ServiceEntityRepository
 {
@@ -20,7 +21,7 @@ class ApplesRepository extends ServiceEntityRepository
     /**
      * @return Apples[] Returns an array of Apples objects
      */
-    public function fetchRow($xAxisField, $yAxisField, $products, $date)
+    public function getTwoField($xAxisField, $yAxisField, $products, $date)
     {
         $queryBuilder = $this->createQueryBuilder('a');
 
@@ -40,14 +41,26 @@ class ApplesRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
-    /*
-    public function findOneBySomeField($value): ?Apples
+    
+    /**
+     * @return Apples[] Returns an array of Apples objects
+     */
+    public function getExchange($product, $date)
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->
-        ;
+        $queryBuilder = $this->createQueryBuilder('a');
+
+        $queryBuilder->select("a.price", "a.date", "a.price", "a.time", "a.products");
+
+        $queryBuilder->andWhere("a.products = :product")->setParameter('product', $product);
+
+        if(count($date) == 1){
+            $queryBuilder->andWhere("a.date = (:date)")->setParameter('date', $date);
+        }else{
+            $queryBuilder->andWhere("a.date BETWEEN  :date_1 AND :date_2")->setParameter('date_1', $date[0])
+            ->setParameter('date_2', $date[1]);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+        
     }
-    */
 }

@@ -18,7 +18,7 @@ class Apples
     private $id;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="string")
      */
     private $date;
 
@@ -28,7 +28,7 @@ class Apples
     private $price;
 
     /**
-     * @ORM\Column(type="time")
+     * @ORM\Column(type="string")
      */
     private $time;
 

@@ -33,6 +33,20 @@ class GetValidator
         }
     }
 
+    public function checkGetParamOneProduct($GET)
+    {
+        //Проверка гет параметра "products"
+        if (isset($GET['product'])){
+            if (strlen($GET['product']) < 1) {
+                return GetValidator::badRequest("Get parametrs 'product' must not be empty");
+            } else {
+                return $GET['product'];
+            }
+        } else {
+            return GetValidator::badRequest("Get parametrs 'product' doesn't exist");
+        }
+    }   
+
 
     public function checkGetParamDate($GET)
     {
