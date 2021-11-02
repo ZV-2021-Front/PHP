@@ -6,7 +6,7 @@ namespace App\Controller;
 
 use Validator\GetValidator;
 
-use Doctrine\DBAL\Connection;
+use App\Repository\ApplesRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -38,21 +38,9 @@ class LineGraphController extends AbstractController
     /**
      * @Route("api/linear", name="line_graph")
      */
-    public function index(Connection $conn, Request $request): Response
+    public function index(ApplesRepository $applesRepository, Request $request): Response
     // function linearHandler(string $xAxisField, string $yAxisField, array $products, array $date, $data_base)
     {
-        // return $this->json([
-        //     'message' => 'Welcome to your new controller!',
-        //     'path' => 'src/Controller/LineGraphController.php',
-        // ]);
-        // LineGraphController::setEncodingOptions(256);
-        // $response = new JsonResponse(['message' => "'"]);
-        // $response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
-
-        // return $response;
-
-        
-        
         
         $GET = $request->query->all();
         // return $this->json($GET);
@@ -66,35 +54,23 @@ class LineGraphController extends AbstractController
 
         $fields = GetValidator::getFields($this->getDoctrine()->getManager(), 'apples');
 
-        $xAxisField = GetValidator::checkGetParamKeyField($GET, 'xAxisField', $fields);
-        if(isset($xAxisField['error'])){return $this->json($xAxisField);}
+        // $xAxisField = GetValidator::checkGetParamKeyField($GET, 'xAxisField', $fields);
+        // if(isset($xAxisField['error'])){return $this->json($xAxisField);}
 
-        $yAxisField = GetValidator::checkGetParamKeyField($GET, 'yAxisField', $fields);
-        if(isset($yAxisField['error'])){return $this->json($yAxisField);}
+        // $yAxisField = GetValidator::checkGetParamKeyField($GET, 'yAxisField', $fields);
+        // if(isset($yAxisField['error'])){return $this->json($yAxisField);}
+        $Fields = GetValidator::checkGetParamFields($GET, ['xAxisField','yAxisField','zAxisField'], $fields);
+        if(isset($Fields['error'])){return $this->json($Fields);}
 
-        
-        // $data = linearHandler($xAxisField, $yAxisField, $products, $dates, $dataBase);
-        $queryBuilder = $conn->createQueryBuilder();
+        $like = GetValidator::checkGetLikeParamProduct($GET);
+        if(isset($like['error'])){return $this->json($like);}
 
-        $queryBuilder->select($xAxisField, $yAxisField)->from('Apples', 'a');
+        $data = $applesRepository->getTwoField($Fields, $products, $date, $like);
+        // $data = $applesRepository->getTwoField($xAxisField, $yAxisField, $products, $date, $like);
         
-        if($products[0] != 'all' )
-            $queryBuilder->andWhere("a.products IN (:products)")->setParameter('products', $products, Connection::PARAM_STR_ARRAY);
-            
-        
-            if(count($date) == 1){
-                $queryBuilder->andWhere("a.date = (:date)")->setParameter('date', $date);
-            }else{
-                $queryBuilder->andWhere("a.date BETWEEN  :date_1 AND :date_2")->setParameter('date_1', $date[0])
-                ->setParameter('date_2', $date[1]);
-            }
-        
-        $respone = $queryBuilder->execute()->fetchAll();
-        
-        // $jsonResponse = new \Symfony\Component\HttpFoundation\JsonResponse($respone);
-        // $jsonResponse->setEncodingOptions(256);
-        // return $jsonResponse->send();
-        
-        return $this->json($respone);
+        return $this->json([
+            'message' => 'Returned',
+            'data' => $data,
+        ]);
     }
 }
