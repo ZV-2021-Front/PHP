@@ -29,13 +29,17 @@ class GetValidator
                 return explode(',', $GET['products']);
             }
         } else {
-            return GetValidator::badRequest("Get parametrs 'products' doesn't exist");
+            if (isset($GET['like']))
+                return false;
+            else
+                return GetValidator::badRequest("Get parametrs 'products' doesn't exist");
+            
         }
     }
 
     public function checkGetParamOneProduct($GET)
     {
-        //Проверка гет параметра "products"
+        //Проверка гет параметра "product"
         if (isset($GET['product'])){
             if (strlen($GET['product']) < 1) {
                 return GetValidator::badRequest("Get parametrs 'product' must not be empty");
@@ -47,6 +51,27 @@ class GetValidator
         }
     }   
 
+    public function checkGetLikeParamProduct($GET)
+    {
+        //Проверка гет параметра "like"
+        if (isset($GET['like'])){
+            if (strlen($GET['like']) < 1) {
+                return GetValidator::badRequest("Get parametrs 'like' must not be empty");
+            } else {
+                if (isset($GET['like_field'])){
+                    if (strlen($GET['like_field']) < 1) {
+                        return GetValidator::badRequest("Get parametrs 'like_field' must not be empty");
+                    } else {
+                        return ['like_column' => $GET['like_field'], 'like_query' => $GET['like']];
+                    }
+                } else {
+                    return GetValidator::badRequest("Get the 'like' parameter requires the 'like_field' parameter");
+                }
+            }
+        } else {
+            return false;
+        }
+    }
 
     public function checkGetParamDate($GET)
     {
@@ -58,6 +83,21 @@ class GetValidator
                 $dates = explode(',', $GET['date']);
             }
             foreach ($dates as $date) {
+                switch ($date) {
+                    case 'lessThan':
+                    case 'greaterThan':
+                    case 'notLessThan':
+                    case 'notGreaterThan':
+                    case 'notEqual':
+                    case 'equal':
+                        $bool=true;
+                        break;
+                    default:
+                        $bool=false;
+                        break;
+
+                    }
+                    if($bool) continue;
                 $numbers  = explode('-', $date);
                 if (count($numbers) == 3) {
                     if (!(iconv_strlen($numbers[1]) == 2 and iconv_strlen($numbers[2]) == 2 and $numbers[1] <= 12 and $numbers[2] <= 31 and $numbers[1] > 0 and $numbers[2] > 0 and $numbers[0] > 0)) {
@@ -91,7 +131,7 @@ class GetValidator
         
         if (isset($GET[$key])) {
             
-            if ( in_array($GET[$key], $fields) ){
+        if ( in_array($GET[$key], $fields) ){
                 return $GET[$key];
             } else {
                 return GetValidator::badRequest("Get parametrs '{$key}' is wrong");
@@ -99,5 +139,23 @@ class GetValidator
         } else {
             return GetValidator::badRequest("Get parametrs '{$key}' is wrong");
         }
+        
+    }
+
+
+
+    public function checkGetParamFields($GET, array $keys, array $fields)
+    {
+        $return_fields = [];
+        foreach ($keys as $key) {
+            if (isset($GET[$key])) {
+                if ( in_array($GET[$key], $fields) ){
+                    array_push($return_fields, $GET[$key]);
+                } else {
+                    return GetValidator::badRequest("Get parametrs '{$key}' is wrong");
+                }
+            }
+        }
+        return $return_fields;
     }
 }

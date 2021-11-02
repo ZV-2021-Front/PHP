@@ -54,13 +54,19 @@ class LineGraphController extends AbstractController
 
         $fields = GetValidator::getFields($this->getDoctrine()->getManager(), 'apples');
 
-        $xAxisField = GetValidator::checkGetParamKeyField($GET, 'xAxisField', $fields);
-        if(isset($xAxisField['error'])){return $this->json($xAxisField);}
+        // $xAxisField = GetValidator::checkGetParamKeyField($GET, 'xAxisField', $fields);
+        // if(isset($xAxisField['error'])){return $this->json($xAxisField);}
 
-        $yAxisField = GetValidator::checkGetParamKeyField($GET, 'yAxisField', $fields);
-        if(isset($yAxisField['error'])){return $this->json($yAxisField);}
+        // $yAxisField = GetValidator::checkGetParamKeyField($GET, 'yAxisField', $fields);
+        // if(isset($yAxisField['error'])){return $this->json($yAxisField);}
+        $Fields = GetValidator::checkGetParamFields($GET, ['xAxisField','yAxisField','zAxisField'], $fields);
+        if(isset($Fields['error'])){return $this->json($Fields);}
 
-        $data = $applesRepository->getTwoField($xAxisField, $yAxisField, $products, $date);
+        $like = GetValidator::checkGetLikeParamProduct($GET);
+        if(isset($like['error'])){return $this->json($like);}
+
+        $data = $applesRepository->getTwoField($Fields, $products, $date, $like);
+        // $data = $applesRepository->getTwoField($xAxisField, $yAxisField, $products, $date, $like);
         
         return $this->json([
             'message' => 'Returned',
