@@ -59,7 +59,9 @@ class LineGraphController extends AbstractController
 
         // $yAxisField = GetValidator::checkGetParamKeyField($GET, 'yAxisField', $fields);
         // if(isset($yAxisField['error'])){return $this->json($yAxisField);}
-        $Fields = GetValidator::checkGetParamFields($GET, ['xAxisField','yAxisField','zAxisField'], $fields);
+        // $Fields = GetValidator::checkGetParamFields($GET, ['xAxisField','yAxisField','zAxisField'], $fields);
+        // if(isset($Fields['error'])){return $this->json($Fields);}
+        $Fields = GetValidator::checkGetParamManyFields($GET, $fields);
         if(isset($Fields['error'])){return $this->json($Fields);}
 
         $like = GetValidator::checkGetLikeParamProduct($GET);

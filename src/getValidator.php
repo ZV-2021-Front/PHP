@@ -158,4 +158,23 @@ class GetValidator
         }
         return $return_fields;
     }
+
+    public function checkGetParamManyFields($GET, array $fields)
+        {
+        
+        if (isset($GET['fields'])) {
+            $key =  explode(',',$GET['fields']);
+            foreach ($key as $value) {
+                if ( in_array($value, $fields) ){
+                    continue;
+                } else {
+                    return GetValidator::badRequest("Get parametrs 'fields' is wrong. Field '{$value}' dosen't exist");
+                }
+            }
+            return $key;
+        } else {
+            return GetValidator::badRequest("Get parametrs 'fields' is wrong. Field '{$value}' dosen't exist");
+        }
+        
+    }
 }
