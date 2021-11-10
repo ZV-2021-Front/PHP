@@ -125,7 +125,7 @@ class GetValidator
         }
         return $columnNames;
     }
-
+    
     public function checkGetParamKeyField($GET, $key, array $fields)
     {
         
@@ -138,6 +138,22 @@ class GetValidator
             }
         } else {
             return GetValidator::badRequest("Get parametrs '{$key}' is wrong");
+        }
+        
+    }
+
+    public function checkGetTableName($GET)
+    {
+        
+        if (isset($GET['table_name'])) {
+            
+            if ( strlen($GET['table_name']) < 1 ){
+                    return GetValidator::badRequest("Get parametrs 'table_name' is wrong ");
+                } else {
+                    return $GET['table_name'];
+                }
+        } else {
+            return GetValidator::badRequest("Get parametrs 'table_name' dosn't exist");
         }
         
     }
